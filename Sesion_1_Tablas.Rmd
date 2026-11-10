@@ -1,0 +1,414 @@
+---
+title: 'Sesión I: Tablas '
+author: "María Guzmán Martínez, Mónica Lucero Felipe Ángel, Pedro Alberto López Ocampo"
+date: "9 de noviembre, 2025"
+output:
+  pdf_document:
+    toc: true
+  word_document:
+    toc: true
+  html_document:
+    toc: true
+    df_print: paged
+csl: apa.csl
+bibliography: Referencias2.bib
+header-includes:
+- \usepackage{graphicx}
+- \usepackage{fancyhdr}
+- \usepackage{amssymb,amsmath, amsthm,amsfonts}
+- \usepackage{setspace,verbatim,listings}
+- \usepackage{booktabs,multirow,float,longtable}
+- "\\usepackage[spanish,es-nodecimaldot]{babel}"
+link-citations: true
+linkcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      error=FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+```
+
+```{r, eval=FALSE}
+
+install.packages("janitor")
+install.packages("purrr")
+install.packages("mxmaps")
+install.packages("tidyr")
+
+install.packages("remotes", dependencies = TRUE)
+
+library(remotes)
+remotes::install_github("diegovalle/mxmaps")
+```
+
+
+```{r}
+library(janitor) # adorn_totals
+library(purrr)
+library(mxmaps)   # df_mxmunicipio
+library(tidyr)    
+
+library(readr)   # read_csv
+library(dplyr)   # manipular variables
+library(flextable)
+```
+
+
+# YAM
+
+
+La regresión lineal, nos ayuda a identificar relaciones entre variables 
+[@laguna2014correlacion]
+
+
+Ejemplo1:
+
+
+título: "Mi documento"
+autor: "Tu Nombre"
+fecha: 2026-11-08
+
+
+Ejemplo 2:
+
+
+title: "Análisis de Datos con R"
+author: "María"
+date: "2026-11-08"
+output: 
+  word:
+    toc: true
+    theme: cosmo
+
+
+Enlaces:
+
+- Elaboración de reportes: https://epirhandbook.com/es/new_pages/rmarkdown.es.html
+
+- YAM: https://www.rpubs.com/tracelac/Reportermd
+
+- YAM: https://rpubs.com/gustavomtzv/874870
+
+# Importar bases de datos
+
+Encuesta Nacional de Ocupación y Empleo (ENOE): Es la fuente de información laboral más importante y frecuente del país. Genera datos mensuales y trimestrales.
+
+• Información de: La tasa de desocupación (desempleo), la tasa de informalidad laboral, la población económicamente activa (PEA), los niveles de ingresos (salarios en relación con el salario mínimo) y las horas trabajadas.
+
+• Utilidad: Es el termómetro real del mercado. Te permite saber qué tipo de perfiles están ocupados (por escolaridad, edad y género) y en qué sectores (servicios, manufactura, comercio).
+
+
+Información:
+
+https://www.inegi.org.mx/datosabiertos/ 
+
+
+Nombre de archivo de la capeta,Título de Tablas:
+
+1. *conjunto_de_datos_coe1_enoe_2026_1t*: Cuestionario de ocupación y empleo parte 1
+
+2. *conjunto_de_datos_coe2_enoe_2026_1t*: Cuestionario de ocupación y empleo parte 2
+
+3. *conjunto_de_datos_hog_enoe_2026_1t*: Hogares
+
+4. **conjunto_de_datos_sdem_enoe_2026_1t**: Características sociodemográficas
+
+5. *conjunto_de_datos_viv_enoe_2026_1t*: Vivienda
+
+
+
+Visualización:
+
+- *View()*
+
+
+- *head()*: Muestra los primeros elementos del data.frame
+
+- *tail()*: Muestra los últimos elementos del data.frame
+
+- *make.names()*: quitas  espacios en los nombres de columnas.
+
+- *glimpse()*: Muestra el tipo de dato de cada columna y los primeros valores en formato de lista.
+
+
+
+Paquetes para bases de datos en otros formatos:
+
+
+
+# Tipo de variables en R
+
+
+| Abreviatura   | Tipo en R | Descripción                                    |
+| :------------ | :-------- | :--------------------------------------------- |
+| **chr**       | Character | Texto o cadenas de caracteres.                 |
+| **Factor**    | Factor    | Variables categóricas (con niveles/etiquetas). |
+| **num / dbl** | Numeric   | Números reales (con o sin decimales).          |
+| **int**       | Integer   | Números enteros.                               |
+| **logi**      | Logical   | TRUE o FALSE.                                  |
+| **Date**      | Date      | Fechas.                                        |
+
+
+La función *str()*, permite explorar el tipo de variables que se ha importado
+
+
+
+
+# Generación de tablas
+
+```{r}
+datos_sdem_enoe_2026_1t<- read.csv("C:/Documetos MGM_OS_Dell/Documentos Maria_Dell/Cursos_Taller_Impartidos/Taller_47_Aniversario_FM/Bases de datos/conjunto_de_datos_sdem_enoe_2026_1t/conjunto_de_datos/conjunto_de_datos_sdem_enoe_2026_1t.csv" )
+
+
+View(datos_sdem_enoe_2026_1t)
+```
+
+Objetivo: Hacer un estudio de la población que se encuentra en 
+
+
+Variables:
+
+• Número de municipio según entidad — *cve_mun*
+
+• Entidad federativa — *cve_ent*
+
+• Pregunta 8 Sexo — *sex*
+
+• Pregunta 9 Edad — *eda*
+
+• Pregunta 12 ¿Sabe leer y escribir un recado...? — *cs_p12*
+
+• Pregunta 13 ¿Hasta qué año aprobó... en la escuela? — *cs_p13_1*
+
+• Pregunta 13 ¿Hasta qué año aprobó... en la escuela? — *cs_p13_2*
+
+• Pregunta 14 Clave de la carrera — *cs_p14_c*
+
+• Pregunta 15 ¿Qué estudio le pidieron a... para ingresar a esta carrera? — *cs_p15*
+
+• Pregunta 16 ¿Terminó los estudios del plan de esta carrera? — *cs_p16*
+
+• Pregunta 17 ¿... Asiste actualmente a la escuela? — *cs_p17*
+
+• Pregunta 18 En total ¿cuántas hijas e hijos que nacieron vivos ha tenido...? — *n_hij*
+
+• Pregunta 19 Estado conyugal — *e_con*
+
+• Clasificación de la población ocupada por nivel de ingreso — *ing7c*
+
+• Clasificación de la población ocupada según sector de actividades - Totales — *rama_est1*
+
+• Clasificación de la población según sector de actividades - Subtotales — *rama_est2*
+
+• Clasificación de la población ocupada por tipo de unidad económica - Totales — *tue1*
+
+• Clasificación de la población ocupada por tipo de unidad económica - Subtotales — *tue2*
+
+• Clasificación de la población de 5 años y más por nivel de instrucción — *niv_ins*
+
+• Clasificación de la población de 15 años y más: Grupo edad 5 clases — *eda5c*
+
+• Clasificación de la población de 15 años y más: Grupo edad 7 clases — *eda7c*
+
+• Clasificación de la población de 15 años y más: Grupo edad 12 clases — *eda12c*
+
+• Clasificación de la población femenina de 15 años y más por número de hijos e hijas — *hij5c*
+
+• Clasificación de la población de 15 años y más por condición de actividad e inactividad — *domestico*
+
+• Años de escolaridad — *anios_esc*
+
+• Horas trabajadas en la semana — *hrsocup*
+
+• Ingresos mensuales — *ing_x_hrs*
+
+• Promedio de ingreso por hora trabajada — *ing_x_hrs*
+
+
+
+```{r}
+variables <- c(
+  "cve_mun", "cve_ent", "sex", "eda", "cs_p12", 
+  "cs_p13_1", "cs_p13_2", "cs_p14_c", "cs_p15", "cs_p16", "cs_p17", 
+  "n_hij", "e_con", "ing7c", "rama_est1", "rama_est2", "tue1", 
+  "tue2", "niv_ins", "eda5c", "eda7c", "eda12c", 
+  "hij5c", "domestico", "anios_esc", "hrsocup", "ing_x_hrs", "ing_x_hrs"
+)
+
+dat<-datos_sdem_enoe_2026_1t|>
+     dplyr::select(variables)
+
+
+View(dat)
+```
+
+
+```{r}
+ruta_carpeta <- "C:/Documetos MGM_OS_Dell/Documentos Maria_Dell/Cursos_Taller_Impartidos/Taller_47_Aniversario_FM/Bases de datos/conjunto_de_datos_sdem_enoe_2026_1t/catalogos/"
+
+
+var_eti <- c(
+     "cve_ent",  "sex",          "cs_p12", 
+   "cs_p13_1",  "cs_p13_2", "cs_p14_c",     "cs_p15", 
+   "cs_p16",    "cs_p17",   "e_con",        "ing7c",
+   "rama_est1", "rama_est2", "tue1",        "tue2",
+   "niv_ins",   "eda5c", "eda7c", "eda12c", "hij5c",
+   "domestico", "anios_esc"
+)
+```
+
+```{r}
+dat_etiquetado <- dat
+
+for (var in var_eti) {
+  
+  archivo_csv <- paste0(ruta_carpeta, var, ".csv")
+  
+  if (file.exists(archivo_csv)) {
+    
+    # CAMBIO AQUÍ: Cambiamos "latin1" por "UTF-8" para corregir los acentos de la ENOE
+    catalogo_actual <- read.csv(archivo_csv, sep = ",", header = TRUE, 
+                                fileEncoding = "UTF-8", check.names = FALSE, 
+                                stringsAsFactors = FALSE)
+    
+    if ("CVE" %in% colnames(catalogo_actual) & "DESCRIP" %in% colnames(catalogo_actual)) {
+      
+      dat_etiquetado[[var]] <- as.character(dat_etiquetado[[var]])
+      catalogo_actual$CVE <- as.character(catalogo_actual$CVE)
+      
+      catalogo_actual <- catalogo_actual %>% rename(!!var := CVE)
+      
+      dat_etiquetado <- dat_etiquetado %>%
+        left_join(catalogo_actual, by = var)
+      
+      if ("DESCRIP" %in% colnames(dat_etiquetado)) {
+        dat_etiquetado[[var]] <- dat_etiquetado$DESCRIP
+        dat_etiquetado$DESCRIP <- NULL
+      }
+    }
+    
+  } else {
+    warning(paste("No se pudo encontrar el archivo:", archivo_csv))
+  }
+}
+
+View(dat_etiquetado)
+
+```
+
+
+```{r}
+
+
+dat_nom<-df_mxmunicipio_2020 |>
+         filter(state_code =="12")|>
+         select(municipio_code,municipio_name) %>% 
+         mutate(cve_mun=as.numeric(municipio_code))
+       
+
+
+dat_estudio <- inner_join(dat_etiquetado, dat_nom, by = "cve_mun" )
+
+
+```
+
+
+De acuerdo con los resultados sociodemográficos obtenidos para el estado de Guerrero en el periodo de estudio, se registró una muestra total de 11,817 personas encuestadas. Se observa un predominio de la población femenina, la cual representa el 53.1% (6,274 casos) del total de la muestra estatal, frente a un 46.9% (5,543 casos) correspondiente a la población masculina."
+
+```{r}
+dat <- dat_estudio |> 
+  filter(cve_ent == 12, !is.na(sex)) |> 
+  group_by(sex) |> 
+  count() |> 
+  ungroup() |> 
+  mutate(Porcentaje=(n/sum(n))*100 )|> 
+  adorn_totals(where = "row", name = "Total") 
+
+
+flextable(dat) |> 
+  autofit()|>
+  set_caption("Distribución de la población, 1t ENOE, 2025.")
+```
+
+El análisis de la distribución municipal de la muestra de la ENOE para el estado de Guerrero revela una marcada concentración en el municipio de Acapulco de Juárez, el cual abarca el 48.6% del total de los registros con 5,850 personas encuestadas. El resto de la muestra se distribuye en proporciones significativamente menores entre los demás municipios de la entidad, destacando Teloloapan con el 5.1% (609 casos), la capital Chilpancingo de los Bravo con el 4.5% (543 casos) y Taxco de Alarcón con el 3.9% (464 casos).
+
+
+
+```{r}
+dat <- dat_estudio |> 
+  filter(cve_ent == 12) |> 
+  group_by(municipio_name) |> 
+  count() |> 
+  ungroup() |> 
+  mutate(Porcentaje=(n/sum(n))*100 )|> 
+  arrange(desc(n))
+
+
+flextable(dat) |> 
+  autofit() |>
+  set_header_labels( municipio_name = "Municipio") |>
+  set_caption("Población encuestada en 1t del ENOE, 2026")
+```
+
+El análisis del nivel de instrucción alcanzado por la población de 15 a 24 años en el estado de Guerrero revela que la opción educativa mayoritaria es la preparatoria o bachillerato, abarcando al 42.3% (746 casos) de los jóvenes encuestados. Le sigue la educación secundaria con el 33.5% (590 casos), mientras que solo el 14.4% (254 casos) ha logrado acceder o concluir estudios de nivel profesional o superior en el periodo analizado.
+```{r}
+dat <- dat_estudio |> 
+  filter(cve_ent == 12, eda5c=="15 a 24 años") |> 
+  group_by(cs_p13_1) |> 
+  count() |> 
+  ungroup() |> 
+  mutate(Porcentaje=(n/sum(n))*100 )|> 
+  arrange(desc(n))
+
+
+flextable(dat) |> 
+  autofit() |>
+  set_header_labels( cs_p13_1 = "Nivel de estudios") |>
+  set_caption("Nivel de estudios de la población de 15 a 24 años, 1t del ENOE, 2026.")
+
+```
+
+
+Al examinar los indicadores continuos de la población de 15 a 24 años en el estado de Guerrero, se identifica una edad promedio de 19.1 años (+- 2.9). En el ámbito familiar, la presencia de hijos nacidos vivos es incipiente, registrando una media de 0.26 hijos por joven, con un rango que va de 0 a 3. Por su parte, la inserción laboral medida a través de las horas semanales trabajadas exhibe una profunda heterogeneidad (CV = 143.7%); el promedio general se sitúa en 15.8 horas por semana, sin embargo, se detectan casos extremos de sobreocupación laboral que alcanzan hasta las 112 horas semanales, conviviendo con una parte significativa de la población juvenil que no registra horas de trabajo.
+
+```{r}
+dat <- dat_estudio |> 
+  filter(cve_ent == 12, eda5c=="15 a 24 años") |> 
+  select(eda,n_hij,hrsocup)|>  
+  rename(nhij=n_hij)|> 
+  summarise(across(
+    everything(),
+    list(
+      Min = ~ min(.x, na.rm = TRUE),
+      Max = ~ max(.x, na.rm = TRUE),
+      Media = ~ mean(.x, na.rm = TRUE),
+      SD = ~ sd(.x, na.rm = TRUE),
+      CV = ~ (sd(.x, na.rm = TRUE) / mean(.x, na.rm = TRUE)) * 100 ))) |> 
+  pivot_longer(
+    cols = everything(),
+    names_to = c("Variable", "Estadistico"),
+    names_sep = "_")|> 
+  pivot_wider(
+    names_from = Estadistico,
+    values_from = value) 
+
+flextable(dat) |> 
+  autofit() |>
+  set_caption("Estadísticass de 15 a 24 años, 1t del ENOE, 2026.")
+
+```
+
+
+
+# Tarea 
+
+Instalar los paquetes:
+
+- *ggplot2()*
+
+# Referencias
+
+
+
